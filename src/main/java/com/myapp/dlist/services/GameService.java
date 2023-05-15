@@ -3,11 +3,13 @@ package com.myapp.dlist.services;
 import com.myapp.dlist.dto.GameDto;
 import com.myapp.dlist.dto.GameMinDto;
 import com.myapp.dlist.entities.Game;
+import com.myapp.dlist.projections.GameMinProjection;
 import com.myapp.dlist.repositories.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -17,6 +19,11 @@ public class GameService {
     private GameRepository gameRepository;
 
 
+    @Transactional(readOnly = true)
+    public List<GameMinDto> findByList(Long listId){
+        List<GameMinProjection> games = gameRepository.searchGameList(listId);
+        return games.stream().map(GameMinDto::new).toList();
+    }
     @Transactional(readOnly = true)
     public GameDto findById(Long id){
         Game result = gameRepository.findById(id).get();
@@ -30,4 +37,6 @@ public class GameService {
         List<GameMinDto> dto = result.stream().map(x -> new GameMinDto(x)).toList();
         return dto;
     }
+
+
 }
